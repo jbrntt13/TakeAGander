@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🪿 The Goose Cam</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --goose-yellow: #FFD93D;
+      --goose-orange: #FF8C42;
+      --goose-dark: #1a1a2e;
+      --goose-darker: #12121f;
+      --pond-blue: #4ECDC4;
+      --pond-blue-dim: #3aada5;
+      --grass-green: #6BCB77;
+      --feather-white: #f8f8f2;
+      --honk-red: #FF6B6B;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--goose-darker);
+      color: var(--feather-white);
+      font-family: 'Nunito', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Subtle animated background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(78, 205, 196, 0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(255, 217, 61, 0.04) 0%, transparent 50%),
+        radial-gradient(ellipse at 60% 80%, rgba(107, 203, 119, 0.04) 0%, transparent 50%);
+      z-index: -1;
+      animation: bgShift 20s ease-in-out infinite alternate;
+    }
+
+    @keyframes bgShift {
+      0% { opacity: 1; }
+      50% { opacity: 0.6; }
+      100% { opacity: 1; }
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    /* Header */
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+      animation: dropIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+
+    @keyframes dropIn {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .goose-emoji {
+      font-size: 4rem;
+      display: inline-block;
+      animation: waddle 2s ease-in-out infinite;
+      filter: drop-shadow(0 4px 20px rgba(255, 217, 61, 0.3));
+    }
+
+    @keyframes waddle {
+      0%, 100% { transform: rotate(-5deg) translateY(0); }
+      25% { transform: rotate(5deg) translateY(-4px); }
+      50% { transform: rotate(-3deg) translateY(0); }
+      75% { transform: rotate(4deg) translateY(-2px); }
+    }
+
+    h1 {
+      font-family: 'Lilita One', cursive;
+      font-size: 3.5rem;
+      line-height: 1;
+      margin: 0.5rem 0;
+      background: linear-gradient(135deg, var(--goose-yellow), var(--goose-orange));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: none;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--pond-blue);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    /* Live badge */
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255, 107, 107, 0.15);
+      border: 1px solid rgba(255, 107, 107, 0.3);
+      padding: 0.35rem 1rem;
+      border-radius: 2rem;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--honk-red);
+      margin: 1rem auto 0;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--honk-red);
+      border-radius: 50%;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.5); }
+      50% { opacity: 0.8; box-shadow: 0 0 0 6px rgba(255, 107, 107, 0); }
+    }
+
+    /* Video area */
+    .stream-wrapper {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--goose-dark);
+      border: 2px solid rgba(255, 217, 61, 0.15);
+      box-shadow:
+        0 4px 30px rgba(0, 0, 0, 0.4),
+        0 0 60px rgba(255, 217, 61, 0.05);
+      animation: fadeUp 0.8s 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+      aspect-ratio: 16/9;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .stream-wrapper video,
+    .stream-wrapper iframe,
+    .stream-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Placeholder when stream is loading */
+    .stream-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      background: var(--goose-dark);
+    }
+
+    .stream-placeholder .loading-goose {
+      font-size: 3rem;
+      animation: waddle 1.5s ease-in-out infinite;
+    }
+
+    .stream-placeholder p {
+      font-weight: 700;
+      color: var(--pond-blue-dim);
+      font-size: 1.1rem;
+    }
+
+    /* Info cards */
+    .info-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
+      animation: fadeUp 0.8s 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+
+    .info-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 1.25rem;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .info-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 217, 61, 0.2);
+    }
+
+    .info-card h3 {
+      font-family: 'Lilita One', cursive;
+      color: var(--goose-yellow);
+      font-size: 1.1rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .info-card p {
+      font-size: 0.95rem;
+      color: rgba(248, 248, 242, 0.7);
+      line-height: 1.5;
+    }
+
+    /* Honk button */
+    .honk-section {
+      text-align: center;
+      margin-top: 2rem;
+      animation: fadeUp 0.8s 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+
+    .honk-counter {
+      font-size: 0.85rem;
+      color: rgba(248, 248, 242, 0.4);
+      margin-bottom: 0.75rem;
+    }
+
+    .honk-btn {
+      background: linear-gradient(135deg, var(--goose-yellow), var(--goose-orange));
+      color: var(--goose-dark);
+      border: none;
+      padding: 0.9rem 2.5rem;
+      border-radius: 50px;
+      font-family: 'Lilita One', cursive;
+      font-size: 1.3rem;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 4px 20px rgba(255, 217, 61, 0.25);
+      user-select: none;
+    }
+
+    .honk-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 30px rgba(255, 217, 61, 0.35);
+    }
+
+    .honk-btn:active {
+      transform: scale(0.95);
+    }
+
+    .honk-btn.honking {
+      animation: honkShake 0.4s ease-in-out;
+    }
+
+    @keyframes honkShake {
+      0% { transform: scale(0.95); }
+      25% { transform: scale(1.1) rotate(-3deg); }
+      50% { transform: scale(1.15) rotate(3deg); }
+      75% { transform: scale(1.05) rotate(-1deg); }
+      100% { transform: scale(1); }
+    }
+
+    /* Floating honk text */
+    .honk-float {
+      position: fixed;
+      pointer-events: none;
+      font-family: 'Lilita One', cursive;
+      font-size: 2rem;
+      color: var(--goose-yellow);
+      animation: floatUp 1.2s ease-out forwards;
+      z-index: 100;
+      text-shadow: 0 2px 10px rgba(255, 217, 61, 0.5);
+    }
+
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0) rotate(0deg) scale(1); }
+      100% { opacity: 0; transform: translateY(-120px) rotate(15deg) scale(1.5); }
+    }
+
+    /* Goose fact ticker */
+    .fact-ticker {
+      margin-top: 2rem;
+      text-align: center;
+      padding: 1rem;
+      background: rgba(78, 205, 196, 0.06);
+      border: 1px solid rgba(78, 205, 196, 0.1);
+      border-radius: 10px;
+      animation: fadeUp 0.8s 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+
+    .fact-ticker .label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--pond-blue);
+      font-weight: 800;
+      margin-bottom: 0.4rem;
+    }
+
+    .fact-ticker .fact {
+      font-size: 0.95rem;
+      color: rgba(248, 248, 242, 0.65);
+      line-height: 1.5;
+      transition: opacity 0.4s;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 3rem;
+      padding-bottom: 2rem;
+      font-size: 0.8rem;
+      color: rgba(248, 248, 242, 0.25);
+    }
+
+    footer a {
+      color: var(--pond-blue-dim);
+      text-decoration: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      h1 { font-size: 2.4rem; }
+      .goose-emoji { font-size: 3rem; }
+      .container { padding: 1.25rem 1rem; }
+      .honk-btn { font-size: 1.1rem; padding: 0.75rem 2rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="goose-emoji">🪿</div>
+      <h1>THE GOOSE CAM</h1>
+      <div class="subtitle">Live from Jack's Shed!</div>
+      <div class="live-badge">
+        <span class="live-dot"></span>
+        LIVE
+      </div>
+    </header>
+
+    <div class="stream-wrapper" id="streamWrapper">
+      <div class="stream-placeholder" id="placeholder">
+        <div class="loading-goose">🪿</div>
+        <p>Waiting for the goose...</p>
+      </div>
+      <!-- go2rtc will serve the stream here -->
+      <!-- Replace the src below with your go2rtc WebRTC or MSE endpoint -->
+      <iframe
+        id="gooseStream"
+        src="about:blank"
+        allow="autoplay"
+        style="display:none; border:none;"
+      ></iframe>
+    </div>
+
+    <div class="info-row">
+      <div class="info-card">
+        <h3>🪿 About The Goose</h3>
+        <p>This goose has claimed the top of a shed as their personal kingdom. We don't question it. We just watch.</p>
+      </div>
+      <div class="info-card">
+        <h3>📍 Location</h3>
+        <p>Atop a shed somewhere in Memphis, Tennessee. Elevation: roughly 4 feet. Attitude: immeasurable.</p>
+      </div>
+      <div class="info-card">
+        <h3>📡 The Tech</h3>
+        <p>Tapo WiFi camera, running through go2rtc on a home server, tunneled to the internet via Cloudflare. All for one goose.</p>
+      </div>
+    </div>
+
+    <div class="honk-section">
+      <div class="honk-counter" id="honkCounter">
+        The internet has honked <strong id="honkNum">0</strong> times
+      </div>
+      <button class="honk-btn" id="honkBtn" onclick="doHonk()">
+        🪿 HONK
+      </button>
+    </div>
+
+    <div class="fact-ticker">
+      <div class="label">🧠 Goose Fact</div>
+      <div class="fact" id="gooseFact">Loading goose wisdom...</div>
+    </div>
+
+    <footer>
+      A very serious project &middot; <a href="#">Powered by whimsy and a WiFi camera</a>
+    </footer>
+  </div>
+
+  <script>
+    // ============================================
+    // STREAM SETUP
+    // ============================================
+    // go2rtc serves a built-in player page.
+    // Once go2rtc is running, uncomment and update this URL:
+    //
+    // const GO2RTC_URL = 'http://localhost:1984/stream.html?src=goose';
+    //
+    // For now we'll use the placeholder. To activate:
+    function activateStream() {
+      const stream = document.getElementById('gooseStream');
+      const placeholder = document.getElementById('placeholder');
+      // Update this URL to your go2rtc instance
+      stream.src = '/stream.html?src=goose';
+      stream.style.display = 'block';
+      placeholder.style.display = 'none';
+    }
+
+    // Auto-try to load stream after a moment
+    setTimeout(() => {
+      // Uncomment the line below once go2rtc is running:
+       activateStream();
+    }, 2000);
+
+    // ============================================
+    // HONK BUTTON
+    // ============================================
+    let honkCount = parseInt(localStorage.getItem('goose_honks') || '0');
+    document.getElementById('honkNum').textContent = honkCount.toLocaleString();
+
+    function doHonk() {
+      honkCount++;
+      localStorage.setItem('goose_honks', honkCount);
+      document.getElementById('honkNum').textContent = honkCount.toLocaleString();
+
+      const btn = document.getElementById('honkBtn');
+      btn.classList.remove('honking');
+      void btn.offsetWidth; // reflow
+      btn.classList.add('honking');
+
+      // Floating HONK text
+      const float = document.createElement('div');
+      float.className = 'honk-float';
+      float.textContent = ['HONK', 'HONK!', 'HÖÑK', 'H O N K', '🪿 HONK'][Math.floor(Math.random() * 5)];
+      float.style.left = (Math.random() * 60 + 20) + 'vw';
+      float.style.top = (Math.random() * 30 + 40) + 'vh';
+      document.body.appendChild(float);
+      setTimeout(() => float.remove(), 1300);
+    }
+
+    // ============================================
+    // GOOSE FACTS
+    // ============================================
+    const facts = [
+      "Geese can fly at altitudes up to 29,000 feet. Your shed goose chooses not to.",
+      "A group of geese on the ground is called a gaggle. A group on a shed is called a problem.",
+      "Geese have teeth on their tongues. Sleep well.",
+      "Geese mate for life. This goose has chosen the shed.",
+      "Canada geese can remember people who have wronged them. Proceed with caution as I have not seen its VISA yet.",
+      "Geese have been used as guard animals since ancient Rome. This one guards the shed.",
+      "Baby geese can swim within 24 hours of hatching. I could do the same if pressured.",
+      "A goose's honk can be heard from over a mile away. My neighbors know.",
+      "Geese fly in V formation to save energy. Solo shed geese answer to no one.",
+      "The plural of 'goose' is 'geese,' but there is only one shed goose. The Shed Goose.",
+      "Geese have excellent eyesight and can see nearly 340 degrees around them. They see everything.",
+      "Some geese have been known to live over 30 years. This could be a long stream.",
+    ];
+
+    let factIndex = 0;
+    function showFact() {
+      const el = document.getElementById('gooseFact');
+      el.style.opacity = 0;
+      setTimeout(() => {
+        el.textContent = facts[factIndex];
+        el.style.opacity = 1;
+        factIndex = (factIndex + 1) % facts.length;
+      }, 400);
+    }
+    showFact();
+    setInterval(showFact, 8000);
+  </script>
+</body>
+</html>

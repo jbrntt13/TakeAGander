@@ -1,0 +1,11 @@
+# Environment / secrets
+.env
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Node (for future React migration)
+node_modules/
+dist/
+.vite/

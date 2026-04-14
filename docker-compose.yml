@@ -1,0 +1,28 @@
+# Docker Compose for Goose Cam
+# Place this at: /home/kryze/goosecam/docker-compose.yml
+
+services:
+  go2rtc:
+    image: alexxit/go2rtc
+    container_name: goosecam-go2rtc
+    restart: unless-stopped
+    network_mode: host
+    env_file:
+      - .env
+    volumes:
+      - ./go2rtc.yaml:/config/go2rtc.yaml
+    # go2rtc exposes:
+    #   - 1984: Web UI + API + stream player
+    #   - 8554: RTSP proxy
+    #   - 8555: WebRTC (UDP)
+
+  nginx:
+    image: nginx:alpine
+    container_name: goosecam-nginx
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./www:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - go2rtc
