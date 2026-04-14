@@ -1,0 +1,48 @@
+.stream-wrapper {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--goose-dark);
+  border: 2px solid rgba(255, 217, 61, 0.15);
+  box-shadow:
+    0 4px 30px rgba(0, 0, 0, 0.4),
+    0 0 60px rgba(255, 217, 61, 0.05);
+  animation: fadeUp 0.8s 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  aspect-ratio: 16/9;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.stream-wrapper video,
+.stream-wrapper iframe,
+.stream-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.stream-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  background: var(--goose-dark);
+}
+
+.stream-placeholder .loading-goose {
+  font-size: 3rem;
+  animation: waddle 1.5s ease-in-out infinite;
+}
+
+.stream-placeholder p {
+  font-weight: 700;
+  color: var(--pond-blue-dim);
+  font-size: 1.1rem;
+}

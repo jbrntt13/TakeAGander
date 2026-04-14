@@ -1,0 +1,10 @@
+# go2rtc configuration for Goose Cam
+# Credentials are loaded from environment variables (see .env)
+
+streams:
+  goose:
+    - rtsp://${RTSP_USER}:${RTSP_PASS}@${CAMERA_IP}:554/stream1
+  goose_web:
+    - ffmpeg:goose#video=copy#audio=aac
+  goose_lowres:
+    - rtsp://${RTSP_USER}:${RTSP_PASS}@${CAMERA_IP}:554/stream2

@@ -1,0 +1,66 @@
+.honk-section {
+  text-align: center;
+  margin-top: 2rem;
+  animation: fadeUp 0.8s 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.honk-counter {
+  font-size: 0.85rem;
+  color: rgba(248, 248, 242, 0.4);
+  margin-bottom: 0.75rem;
+}
+
+.honk-btn {
+  background: linear-gradient(135deg, var(--goose-yellow), var(--goose-orange));
+  color: var(--goose-dark);
+  border: none;
+  padding: 0.9rem 2.5rem;
+  border-radius: 50px;
+  font-family: 'Lilita One', cursive;
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 4px 20px rgba(255, 217, 61, 0.25);
+  user-select: none;
+}
+
+.honk-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 30px rgba(255, 217, 61, 0.35);
+}
+
+.honk-btn:active {
+  transform: scale(0.95);
+}
+
+.honk-btn.honking {
+  animation: honkShake 0.4s ease-in-out;
+}
+
+@keyframes honkShake {
+  0% { transform: scale(0.95); }
+  25% { transform: scale(1.1) rotate(-3deg); }
+  50% { transform: scale(1.15) rotate(3deg); }
+  75% { transform: scale(1.05) rotate(-1deg); }
+  100% { transform: scale(1); }
+}
+
+.honk-float {
+  position: fixed;
+  pointer-events: none;
+  font-family: 'Lilita One', cursive;
+  font-size: 2rem;
+  color: var(--goose-yellow);
+  animation: floatUp 1.2s ease-out forwards;
+  z-index: 100;
+  text-shadow: 0 2px 10px rgba(255, 217, 61, 0.5);
+}
+
+@keyframes floatUp {
+  0% { opacity: 1; transform: translateY(0) rotate(0deg) scale(1); }
+  100% { opacity: 0; transform: translateY(-120px) rotate(15deg) scale(1.5); }
+}
+
+@media (max-width: 600px) {
+  .honk-btn { font-size: 1.1rem; padding: 0.75rem 2rem; }
+}

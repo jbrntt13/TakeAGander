@@ -1,0 +1,12 @@
+.footer {
+  text-align: center;
+  margin-top: 3rem;
+  padding-bottom: 2rem;
+  font-size: 0.8rem;
+  color: rgba(248, 248, 242, 0.25);
+}
+
+.footer a {
+  color: var(--pond-blue-dim);
+  text-decoration: none;
+}

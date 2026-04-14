@@ -7,14 +7,20 @@ services:
     container_name: goosecam-go2rtc
     restart: unless-stopped
     network_mode: host
-    env_file:
-      - .env
     volumes:
-      - ./go2rtc.yaml:/config/go2rtc.yaml
+      - ./go2rtc.yaml:/config/go2rtc.yaml:ro
     # go2rtc exposes:
     #   - 1984: Web UI + API + stream player
     #   - 8554: RTSP proxy
     #   - 8555: WebRTC (UDP)
+
+  api:
+    build: ./api
+    container_name: goosecam-api
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - honk-data:/data
 
   nginx:
     image: nginx:alpine
@@ -22,7 +28,11 @@ services:
     restart: unless-stopped
     network_mode: host
     volumes:
-      - ./www:/usr/share/nginx/html:ro
+      - ./dist:/usr/share/nginx/html:ro
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       - go2rtc
+      - api
+
+volumes:
+  honk-data:

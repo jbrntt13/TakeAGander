@@ -1,5 +1,6 @@
 # Environment / secrets
 .env
+go2rtc.yaml
 
 # OS files
 .DS_Store
