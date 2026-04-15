@@ -5,12 +5,12 @@ const cards = [
   {
     icon: 'goose',
     title: 'About The Goose',
-    text: "This goose has claimed the top of a shed as their personal kingdom. We don't question it. We just watch.",
+    text: "This goose has claimed the top of a shed as their personal kingdom. We don't know where the dad is.",
   },
   {
     icon: '📍',
     title: 'Location',
-    text: 'Atop a shed somewhere in Memphis, Tennessee. Elevation: roughly 4 feet. Attitude: immeasurable.',
+    text: 'Atop a shed somewhere in Memphis, Tennessee. Elevation: roughly 5.5 feet. Attitude: immeasurable.',
   },
   {
     icon: '📡',

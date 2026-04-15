@@ -6,7 +6,12 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/api': 'http://localhost:3000',
+      '/api/honks': 'http://localhost:3000',
+      '/api/login': 'http://localhost:3000',
+      '/api/leaderboard': 'http://localhost:3000',
+      '/api/watchtime': 'http://localhost:3000',
+      '/api/watchboard': 'http://localhost:3000',
+      '/api/visitors': 'http://localhost:3000',
     },
   },
 })

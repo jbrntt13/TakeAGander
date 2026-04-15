@@ -6,6 +6,11 @@
   color: rgba(248, 248, 242, 0.25);
 }
 
+.visitor-count {
+  color: rgba(248, 248, 242, 0.35);
+  margin-bottom: 0.4rem;
+}
+
 .footer a {
   color: var(--pond-blue-dim);
   text-decoration: none;

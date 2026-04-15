@@ -44,6 +44,18 @@ body::before {
   padding: 2rem 1.5rem;
 }
 
+.boards-row {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.boards-row > * {
+  flex: 1;
+  margin-top: 0;
+}
+
 @media (max-width: 600px) {
   .container { padding: 1.25rem 1rem; }
+  .boards-row { flex-direction: column; gap: 0; }
 }

@@ -4,7 +4,7 @@ import './HonkButton.css'
 
 const honkTexts = ['HONK', 'HONK!', 'HÖÑK', 'H O N K']
 
-export default function HonkButton() {
+export default function HonkButton({ user, onHonk }) {
   const [count, setCount] = useState(0)
   const [honking, setHonking] = useState(false)
   const [floats, setFloats] = useState([])
@@ -30,11 +30,18 @@ export default function HonkButton() {
     setFloats((prev) => [...prev, float])
     setTimeout(() => setFloats((prev) => prev.filter((f) => f.id !== id)), 1300)
 
-    fetch('/api/honks', { method: 'POST' })
+    fetch('/api/honks', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: user || null }),
+    })
       .then((res) => res.json())
-      .then((data) => setCount(data.count))
+      .then((data) => {
+        setCount(data.count)
+        onHonk?.()
+      })
       .catch(() => setCount((c) => c + 1))
-  }, [])
+  }, [user, onHonk])
 
   return (
     <div className="honk-section">
