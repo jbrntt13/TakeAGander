@@ -1,5 +1,6 @@
 import { createServer } from 'node:http'
-import { readFileSync, writeFileSync, existsSync } from 'node:fs'
+import { readFileSync, writeFileSync, existsSync, statSync } from 'node:fs'
+import { resolve, basename } from 'node:path'
 
 const OPENAI_KEY = process.env.OPENAI_API_KEY || ''
 
@@ -7,6 +8,8 @@ const DATA_FILE = '/data/honks.json'
 const USERS_FILE = '/data/users.json'
 const VISITORS_FILE = '/data/visitors.json'
 const PORT = 3000
+const VIEWER_TIMEOUT = 60_000 // viewers who haven't pinged in 60s are pruned
+const activeViewers = new Map()  // sessionId → lastSeen timestamp
 
 function readData() {
   if (!existsSync(DATA_FILE)) return { count: 0 }
@@ -107,6 +110,7 @@ function parseBody(req) {
 // Username renames: old name → new name (old name still works for login)
 const RENAMES = {
   'Jiminee69420': 'Jiminee',
+  'The Internet': 'Anonymous Honking',
 }
 
 // One-time migration: apply username renames
@@ -152,8 +156,8 @@ const server = createServer(async (req, res) => {
     data.count = (data.count || 0) + 1
     writeData(data)
 
-    // Track per-user honks, or "The Internet" for anonymous
-    const trackAs = (username && RENAMES[username]) || username || 'The Internet'
+    // Track per-user honks, or "Anonymous Honking" for anonymous
+    const trackAs = (username && RENAMES[username]) || username || 'Anonymous Honking'
     const users = readUsers()
     if (!users[trackAs]) {
       users[trackAs] = { honks: 0 }
@@ -225,6 +229,85 @@ const server = createServer(async (req, res) => {
       .slice(0, 10)
     res.end(JSON.stringify(watchboard))
 
+  } else if (req.method === 'GET' && req.url === '/api/goose-status') {
+    const GOOSE_STATUS_FILE = '/data/goose-status.json'
+    if (existsSync(GOOSE_STATUS_FILE)) {
+      try {
+        const status = JSON.parse(readFileSync(GOOSE_STATUS_FILE, 'utf8'))
+        res.end(JSON.stringify(status))
+      } catch {
+        res.end(JSON.stringify({ status: 'unknown', detail: '' }))
+      }
+    } else {
+      res.end(JSON.stringify({ status: 'starting', detail: 'Goose AI is warming up...' }))
+    }
+
+  } else if (req.method === 'GET' && req.url === '/api/goose-log') {
+    const GOOSE_LOG_FILE = '/data/goose-log.json'
+    if (existsSync(GOOSE_LOG_FILE)) {
+      try {
+        const log = JSON.parse(readFileSync(GOOSE_LOG_FILE, 'utf8'))
+        res.end(JSON.stringify(log))
+      } catch {
+        res.end(JSON.stringify([]))
+      }
+    } else {
+      res.end(JSON.stringify([]))
+    }
+
+  } else if (req.method === 'GET' && req.url?.startsWith('/api/goose-history')) {
+    const HISTORY_FILE = '/data/goose-history.jsonl'
+    if (!existsSync(HISTORY_FILE)) {
+      res.end(JSON.stringify([]))
+      return
+    }
+    try {
+      // Parse query param ?limit=N (default 50)
+      const url = new URL(req.url, 'http://localhost')
+      const limit = Math.min(parseInt(url.searchParams.get('limit') || '50', 10), 500)
+
+      const lines = readFileSync(HISTORY_FILE, 'utf8').trim().split('\n').filter(Boolean)
+      // Return most recent first
+      const entries = lines
+        .map((line) => { try { return JSON.parse(line) } catch { return null } })
+        .filter(Boolean)
+        .reverse()
+        .slice(0, limit)
+      res.end(JSON.stringify(entries))
+    } catch {
+      res.end(JSON.stringify([]))
+    }
+
+  } else if (req.method === 'GET' && req.url?.startsWith('/api/goose-screenshot/')) {
+    const filename = basename(req.url.split('/').pop())
+    // Only allow timestamp.jpg filenames
+    if (!/^\d+\.jpg$/.test(filename)) {
+      res.statusCode = 400
+      res.end(JSON.stringify({ error: 'invalid filename' }))
+      return
+    }
+    const filepath = resolve('/data/goose-screenshots', filename)
+    if (existsSync(filepath)) {
+      res.setHeader('Content-Type', 'image/jpeg')
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable')
+      res.end(readFileSync(filepath))
+    } else {
+      res.statusCode = 404
+      res.end(JSON.stringify({ error: 'not found' }))
+    }
+
+  } else if (req.method === 'POST' && req.url === '/api/goose-force') {
+    const { username, password } = await parseBody(req)
+    const adminUser = process.env.ADMIN_USER || ''
+    const adminPass = process.env.ADMIN_PASS || ''
+    if (!adminUser || username !== adminUser || password !== adminPass) {
+      res.statusCode = 403
+      res.end(JSON.stringify({ error: 'not authorized' }))
+      return
+    }
+    writeFileSync('/data/goose-force.json', JSON.stringify({ timestamp: Date.now() }))
+    res.end(JSON.stringify({ ok: true, message: 'Force analyze queued — will run within 5 seconds' }))
+
   } else if (req.method === 'GET' && req.url === '/api/leaderboard') {
     const users = readUsers()
     const leaderboard = Object.entries(users)
@@ -232,6 +315,28 @@ const server = createServer(async (req, res) => {
       .sort((a, b) => b.honks - a.honks)
       .slice(0, 10)
     res.end(JSON.stringify(leaderboard))
+
+  } else if (req.method === 'POST' && req.url === '/api/heartbeat') {
+    const { sessionId } = await parseBody(req)
+    if (!sessionId) {
+      res.statusCode = 400
+      res.end(JSON.stringify({ error: 'missing sessionId' }))
+      return
+    }
+    const now = Date.now()
+    activeViewers.set(sessionId, now)
+    // Prune stale viewers
+    for (const [id, lastSeen] of activeViewers) {
+      if (now - lastSeen > VIEWER_TIMEOUT) activeViewers.delete(id)
+    }
+    res.end(JSON.stringify({ viewers: activeViewers.size }))
+
+  } else if (req.method === 'GET' && req.url === '/api/viewers') {
+    const now = Date.now()
+    for (const [id, lastSeen] of activeViewers) {
+      if (now - lastSeen > VIEWER_TIMEOUT) activeViewers.delete(id)
+    }
+    res.end(JSON.stringify({ viewers: activeViewers.size }))
 
   } else if (req.method === 'GET' && req.url === '/api/visitors') {
     const count = trackVisitor(req)

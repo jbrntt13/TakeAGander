@@ -1,0 +1,54 @@
+.goose-status {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+.goose-status--offline {
+  opacity: 0.6;
+}
+
+.goose-status-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.5;
+  margin-bottom: 0.3rem;
+}
+
+.goose-status-value {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.goose-status-time {
+  font-size: 0.7rem;
+  opacity: 0.4;
+  margin-top: 0.25rem;
+}
+
+.goose-force-btn {
+  margin-top: 0.4rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--feather-white);
+  opacity: 0.4;
+  font-family: inherit;
+  font-size: 0.65rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.goose-force-btn:hover {
+  opacity: 0.8;
+}
+
+.goose-force-btn:disabled {
+  cursor: default;
+  opacity: 0.3;
+}

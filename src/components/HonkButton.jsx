@@ -17,6 +17,8 @@ export default function HonkButton({ user, onHonk }) {
   }, [])
 
   const doHonk = useCallback(() => {
+    const honkAudio = new Audio('/honk-sound.mp3')
+    honkAudio.play().catch(() => {})
     setHonking(true)
     setTimeout(() => setHonking(false), 400)
 

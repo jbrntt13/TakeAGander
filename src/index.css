@@ -44,6 +44,60 @@ body::before {
   padding: 2rem 1.5rem;
 }
 
+.layout-toggle {
+  display: flex;
+  gap: 0.25rem;
+  justify-content: flex-end;
+  margin-bottom: 0.5rem;
+}
+
+.layout-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--feather-white);
+  opacity: 0.4;
+  font-family: inherit;
+  font-size: 0.7rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.layout-btn:hover {
+  opacity: 0.7;
+}
+
+.layout-btn--active {
+  opacity: 0.9;
+  background: rgba(78, 205, 196, 0.15);
+  border-color: var(--pond-blue-dim);
+}
+
+.stream-row {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.stream-row--theater {
+  display: block;
+}
+
+.stream-col {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 800px) {
+  .stream-row {
+    flex-direction: column-reverse;
+  }
+  .layout-toggle {
+    display: none;
+  }
+}
+
 .boards-row {
   display: flex;
   gap: 1.5rem;

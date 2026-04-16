@@ -41,6 +41,14 @@
   letter-spacing: 0.05em;
 }
 
+.live-badges {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 1rem auto 0;
+}
+
 .live-badge {
   display: inline-flex;
   align-items: center;
@@ -52,9 +60,21 @@
   font-weight: 700;
   font-size: 0.85rem;
   color: var(--honk-red);
-  margin: 1rem auto 0;
   text-transform: uppercase;
   letter-spacing: 0.1em;
+}
+
+.viewer-badge {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(78, 205, 196, 0.12);
+  border: 1px solid rgba(78, 205, 196, 0.25);
+  padding: 0.35rem 1rem;
+  border-radius: 2rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--pond-blue);
+  letter-spacing: 0.05em;
 }
 
 .live-dot {

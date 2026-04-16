@@ -21,6 +21,19 @@ services:
     network_mode: host
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ADMIN_USER=${ADMIN_USER}
+      - ADMIN_PASS=${ADMIN_PASS}
+    volumes:
+      - honk-data:/data
+
+  goose-ai:
+    build: ./goose-ai
+    container_name: goosecam-goose-ai
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - RTSP_URL=rtsp://${RTSP_USER}:${RTSP_PASS}@${CAMERA_IP}:554/stream2
     volumes:
       - honk-data:/data
 

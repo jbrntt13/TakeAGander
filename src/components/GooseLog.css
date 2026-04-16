@@ -1,0 +1,56 @@
+.goose-log {
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  min-width: 220px;
+}
+
+.goose-log-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.5;
+  margin-bottom: 0.5rem;
+}
+
+.goose-log-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.goose-log-entry {
+  font-size: 0.8rem;
+  opacity: 0.6;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.goose-log-entry:hover {
+  opacity: 0.8;
+}
+
+.goose-log-entry--current {
+  opacity: 1;
+  font-size: 0.85rem;
+}
+
+.goose-log-entry strong {
+  color: var(--pond-blue);
+}
+
+.goose-log-camera {
+  opacity: 0.4;
+  font-size: 0.7rem;
+}
+
+.goose-log-screenshot {
+  display: block;
+  width: 100%;
+  max-width: 280px;
+  margin-top: 0.4rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
